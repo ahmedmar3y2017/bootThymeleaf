@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.session.web.http.HeaderHttpSessionStrategy;
 
 @Configuration
 // http://docs.spring.io/spring-boot/docs/current/reference/html/howto-security.html
@@ -38,9 +39,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "/home", "/about" ).permitAll().and()
+                .antMatchers("/", "/home", "/about").permitAll().and()
                 //allow h2 console
-                .authorizeRequests().antMatchers("/h2-console/**" , "/allPersons").permitAll()
+                .authorizeRequests().antMatchers("/h2-console/**", "/allPersons").permitAll()
                 .antMatchers("/admin/**").hasAnyRole("ADMIN")
                 .antMatchers("/user/**").hasAnyRole("USER")
                 .anyRequest().authenticated()
@@ -73,7 +74,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web
                 .ignoring()
-                .antMatchers("/resources/**","/h2-console/**", "/webjars/**", "/static/**", "/css/**", "/js/**", "/images/**");
+                .antMatchers("/resources/**", "/h2-console/**", "/webjars/**", "/static/**", "/css/**", "/js/**", "/images/**");
+    }
+
+    //it invoke when create new session should assign new session id
+    @Bean
+    public HeaderHttpSessionStrategy httpSessionStrategy() {
+        return new HeaderHttpSessionStrategy();
     }
 
 
